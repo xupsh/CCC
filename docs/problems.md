@@ -4,74 +4,22 @@ layout: default
 
 # 竞赛题目
 
+## 赛题介绍
+
+近年来，随着大型语言模型（LLM）的兴起，其在自然语言处理任务中的应用已成为人工智能领域的热点。同时MLC LLM, llama.cpp等项目的出现，旨在提高LLM在消费级显卡甚至个人计算机上的推理速度，降低了大模型部署对硬件资源的需求，使更多人从大模型中获益。例如在CMU 陈天奇团队MLC项目的测试（使用4 bit量化对Llama 2 7B和13B，设置prompt长度为1个token，生成512个 token来测量decoding的性能，batch size=1）：
+
+![p1](images/p1.png)
+
+可以看到在MLC LLM项目中， 不管是NV RTX 还是AMD Radeon 消费级显卡都取得了很不错的推理速度。而llama.cpp是一个相对早期的LLM推理引擎开源项目，其架构设计可以通过CPU/GPU进行混合加速推理任务，甚至可以仅依靠CPU完成推理。然而，随着LLM规模的增大和任务的复杂性，llama.cpp在处理大规模模型时面临内存需求和计算效率方面的挑战。
+
+上海交大IPADS 实验室在2023年12月发布了PowerInfer开源项目，其在llama.cpp基础上采用了一种全新的设计思路，利用LLM推理中的高局部性特征。该局部性具体表现为神经元激活的幂律分布，即少数“热”神经元在不同输入下保持激活，而大多数“冷”神经元根据具体输入变化。PowerInfer充分利用了这一特点，设计了一种GPU-CPU混合推理引擎，通过将热激活的神经元预加载到GPU中，而将冷激活的神经元计算在CPU上，从而显著降低了GPU内存需求和CPU-GPU数据传输。目前该项目也已经在llama2-7B，llama2-13B模型上实现了NV和AMD GPU的支持。 
+
+![p2](images/p2.png)
+
 ## **初赛题目**
-- 所有题目不需要生成bit文件，完成co-sim仿真即可
+本次比赛，主要基于PowerInfer的开源项目，要求参赛队在熟悉Llama2-7B/13B的优化方法基础上，利用开源的ROCm开源堆栈和HIP编程模型在Radeon 7900XTX GPU上对13B模型：**[Prosparse-13B](https://huggingface.co/PowerInfer/prosparse-llama-2-13b-gguf)** 展开优化，方法不限(例如算子优化、混合精度量化等)。
 
-### 基础题 
-
-#### DSP （2题必做1题）
-
-1.CORDIC
-
-  > CORDIC (for COordinate Rotation DIgital Computer) is a simple and efficient algorithm to calculate trigonometric functions, hyperbolic functions, square roots, multiplications, divisions, and exponentials and logarithms with arbitrary base, typically converging with one digit (or bit) per iteration.
-
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/cordic)
-
-
-2.DFT
-
-  > DFT is a common operation in signal processing which generates a discrete frequency domain representation of the discrete input signal. The input signal is a vector of samples and the matrix is a set of basis functions corresponding to discrete cosine and sine waveforms of different frequencies. The multiplication of the input signal with these basis functions describes how well the input signal correlates with those waveforms, which is the value of the Fourier series at that frequency.
-
-
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/DFT)
-
-#### CV （3题必做1题）
-
-1.FAST
-
-  > Features from accelerated segment test (FAST) is a corner detection method, which could be used to extract feature points and later used to track and map objects in many computer vision tasks. FAST corner detector uses a circle of 16 pixels (a Bresenham circle of radius 3) to classify whether a candidate point p is actually a corner. 
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/fast)
-
-2.Harris
-
-  > The Harris affine detector can identify similar regions between images that are related through affine transformations and have different illuminations. At a corner, the image intensity will change largely in multiple directions. Harris examines the changes of intensity due to shifts in a local window and uses the second moment matrix as the basis of its corner decisions.
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/harris)
-
-3.Canny
-
-  > The Canny edge detector is an edge detection operator that uses a multi-stage algorithm to detect a wide range of edges in images. 
-  > + Apply Gaussian filter to smooth the image in order to remove the noise. Find the intensity gradients of the image
-  > + Apply gradient magnitude thresholding or lower bound cut-off suppression to get rid of spurious response to edge detection
-  > + Apply double threshold to determine potential edges
-  > + Track edge by hysteresis: Finalize the detection of edges by suppressing all the other edges that are weak and not connected to strong edges.
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/canny)
-
-
-### 高级题 2题选1（不提供参考代码，5月15日后发布评测细节）
-
-1.**Graph:** Betweenness
-  
-  > Betweenness is a graph analysis algorithm. It represents the degree to which nodes stand between each other. For every pair of vertices in a connected graph, there exists at least one shortest path between the vertices such that either the number of edges that the path passes through (for unweighted graphs) or the sum of the weights of the edges (for weighted graphs) is minimized. The betweenness centrality for each vertex is the number of these shortest paths that pass through the vertex.
- 
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/betweenness)
-
-2.**Big Data:** Serialization
-
-  > The serialization is usually used in the Big Data analysis to convert data into portable structure. It is the process of converting data object into a stream of bytes or binary format that is easy to transmit or store. The target serialized format is Arrow IPC defined in open-sourced Apache Arrow project and can be found in the following link: [**reference**](https://github.com/apache/arrow/blob/master/docs/source/format/Columnar.rst#serialization-and-interprocess-communication-ipc)
-  >
-  > [**Details**](https://github.com/xupsh/ccc/tree/main/problems/serialization)
-
-
-
-<!--
-
-!-->  
+![p3](images/p3.png)
 
 ---------------------------------------
-<p align="center">Copyright&copy; 2022 AMD-Xilinx</p>
+<p align="center">Copyright&copy; 2024 AMD-Xilinx</p>
